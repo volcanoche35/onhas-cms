@@ -23,11 +23,15 @@ from flask_login import (
     login_required, current_user
 )
 from werkzeug.utils import secure_filename
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # ---------------------------------------------------------------------------
 # App & Config
 # ---------------------------------------------------------------------------
 app = Flask(__name__)
+
+# Traefik arkasında çalışıyor — X-Forwarded-Proto header'ına güven
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Güvenli secret key — production'da SECRET_KEY env zorunlu
 _secret = os.environ.get("SECRET_KEY")

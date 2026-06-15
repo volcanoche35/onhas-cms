@@ -1,9 +1,9 @@
 /* ============================================================
    ONHAS YAPI CMS — Özel CSS
-   Tema: Endüstriyel Koyu + Altın Vurgu
+   Tema: Endüstriyel Koyu + Altın Vurgu (+ Light Mode)
    ============================================================ */
 
-/* === CSS Değişkenleri === */
+/* === CSS Değişkenleri (Dark — varsayılan) === */
 :root {
     --dark-bg: #1a1a2e;
     --dark-bg-alt: #16213e;
@@ -24,6 +24,72 @@
     --radius-md: 12px;
     --radius-lg: 16px;
     --transition: all 0.3s ease;
+    /* Sabit değerler (temadan bağımsız) */
+    --toggle-size: 44px;
+}
+
+/* === Light Mode Override === */
+body[data-theme="light"] {
+    --dark-bg: #f5f0e8;
+    --dark-bg-alt: #ffffff;
+    --dark-surface: #e8ddcc;
+    --gold: #b8942e;
+    --gold-hover: #a38326;
+    --gold-light: #d4b85c;
+    --text-primary: #1a1a2e;
+    --text-secondary: #4a5568;
+    --text-muted: #718096;
+    --border-color: rgba(184, 148, 46, 0.25);
+    --card-bg: rgba(0, 0, 0, 0.03);
+    --card-bg-hover: rgba(0, 0, 0, 0.06);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* === Tema Toggle Butonu === */
+.theme-toggle {
+    position: fixed;
+    bottom: 90px;
+    right: 24px;
+    z-index: 9999;
+    width: var(--toggle-size);
+    height: var(--toggle-size);
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: var(--dark-bg-alt);
+    color: var(--gold);
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+}
+.theme-toggle:hover {
+    background: var(--gold);
+    color: var(--dark-bg);
+    transform: scale(1.1);
+}
+
+/* Admin panelde navbar içi toggle */
+.theme-toggle-inline {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.theme-toggle-inline:hover {
+    border-color: var(--gold);
+    color: var(--gold);
 }
 
 /* === Genel Sıfırlamalar === */
@@ -859,7 +925,7 @@ body {
 }
 
 .admin-sidebar {
-    background: #1a1a2e;
+    background: var(--dark-bg);
     min-height: 100vh;
     padding: 0;
     position: fixed;
@@ -872,11 +938,11 @@ body {
 
 .admin-sidebar .sidebar-brand {
     padding: 24px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 700;
     text-decoration: none;
@@ -894,7 +960,7 @@ body {
 }
 
 .admin-sidebar .nav-link {
-    color: #b0b8c8;
+    color: var(--text-secondary);
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 4px;
@@ -909,7 +975,7 @@ body {
 .admin-sidebar .nav-link:hover,
 .admin-sidebar .nav-link.active {
     background: rgba(201, 168, 76, 0.15);
-    color: #c9a84c;
+    color: var(--gold);
 }
 
 .admin-sidebar .nav-link i {
@@ -920,14 +986,16 @@ body {
     margin-left: 260px;
     padding: 0;
     min-height: 100vh;
+    background: var(--dark-bg-alt);
 }
 
 .admin-topbar {
-    background: #fff;
-    border-bottom: 1px solid #e9ecef;
+    background: var(--dark-bg-alt);
+    border-bottom: 1px solid var(--border-color);
     padding: 16px 28px;
     display: flex;
     justify-content: space-between;
+    color: var(--text-primary);
     align-items: center;
 }
 
@@ -966,7 +1034,7 @@ body {
     margin-bottom: 16px;
 }
 
-.admin-stat-card .stat-icon.gold { background: rgba(201,168,76,0.1); color: #c9a84c; }
+.admin-stat-card .stat-icon.gold { background: rgba(201,168,76,0.1); color: var(--gold); }
 .admin-stat-card .stat-icon.blue { background: rgba(13,110,253,0.1); color: #0d6efd; }
 .admin-stat-card .stat-icon.green { background: rgba(25,135,84,0.1); color: #198754; }
 .admin-stat-card .stat-icon.red { background: rgba(220,53,69,0.1); color: #dc3545; }

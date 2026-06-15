@@ -104,6 +104,11 @@
         </div>
     </footer>
 
+    <!-- Tema Toggle Butonu -->
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Tema değiştir" title="Aydınlık/Karanlık mod">
+        <i class="bi bi-sun-fill" id="themeIcon"></i>
+    </button>
+
     <!-- WhatsApp Sabit Butonu -->
     <a href="https://wa.me/{{ (site.whatsapp or '905336400937')|replace('+', '')|replace(' ', '') }}" 
        class="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp ile iletişime geç">
@@ -123,6 +128,38 @@
                 nav.classList.remove('nav-scrolled');
             }
         });
+
+        // === TEMA YÖNETİMİ ===
+        (function() {
+            const THEME_KEY = 'onhas-theme';
+            const icon = document.getElementById('themeIcon');
+            
+            function getTheme() {
+                const saved = localStorage.getItem(THEME_KEY);
+                if (saved) return saved;
+                return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+            }
+            
+            function setTheme(theme) {
+                document.body.setAttribute('data-theme', theme);
+                localStorage.setItem(THEME_KEY, theme);
+                if (icon) {
+                    icon.className = theme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+                }
+                // meta theme-color güncelle
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.content = theme === 'light' ? '#f5f0e8' : '#1a1a2e';
+            }
+            
+            // Başlangıç
+            setTheme(getTheme());
+            
+            // Toggle fonksiyonu (butondan çağrılır)
+            window.toggleTheme = function() {
+                const current = document.body.getAttribute('data-theme');
+                setTheme(current === 'light' ? 'dark' : 'light');
+            };
+        })();
     </script>
     {% block scripts %}{% endblock %}
 </body>

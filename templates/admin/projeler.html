@@ -309,5 +309,34 @@
                 });
         }
     </script>
+
+    <!-- Tema Toggle -->
+    <button onclick="toggleTheme()" class="theme-toggle-inline" style="position:fixed;bottom:20px;right:20px;z-index:9999" title="Tema değiştir">
+        <i class="bi bi-sun-fill" id="themeIcon"></i> Tema
+    </button>
+
+<script>
+(function() {
+    const THEME_KEY = 'onhas-theme';
+    const icon = document.getElementById('themeIcon');
+    function getTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved) return saved;
+        return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    function setTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        localStorage.setItem(THEME_KEY, theme);
+        if (icon) icon.className = theme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = theme === 'light' ? '#f5f0e8' : '#1a1a2e';
+    }
+    setTheme(getTheme());
+    window.toggleTheme = function() {
+        setTheme(document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    };
+})();
+</script>
+
 </body>
 </html>
