@@ -3,15 +3,20 @@
 Onhas Yapı CMS — Flask + SQLite + Admin Panel
 """
 import os
+import re
+import secrets
 import sqlite3
+import time
 import uuid
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
 from functools import wraps
+from urllib.parse import urlparse, urljoin
 
 import bcrypt
 from flask import (
     Flask, render_template, request, redirect, url_for,
-    flash, session, g, send_from_directory, jsonify
+    flash, session, g, send_from_directory, jsonify, abort
 )
 from flask_login import (
     LoginManager, UserMixin, login_user, logout_user,
@@ -23,10 +28,30 @@ from werkzeug.utils import secure_filename
 # App & Config
 # ---------------------------------------------------------------------------
 app = Flask(__name__)
-app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "onhas-cms-secret-key-change-in-production-2024"
+
+# Güvenli secret key — production'da SECRET_KEY env zorunlu
+_secret = os.environ.get("SECRET_KEY")
+if not _secret:
+    _secret = secrets.token_hex(64)
+    print("WARNING: SECRET_KEY not set, using random key (sessions reset on restart)")
+app.secret_key = _secret
+
+# Session güvenlik ayarları
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    PERMANENT_SESSION_LIFETIME=3600,
+    REMEMBER_COOKIE_SECURE=True,
+    REMEMBER_COOKIE_HTTPONLY=True,
+    REMEMBER_COOKIE_SAMESITE="Lax",
+    REMEMBER_COOKIE_DURATION=timedelta(days=7),
 )
+
+# Brute-force tracking
+login_attempts = defaultdict(list)
+BRUTE_FORCE_MAX = 5       # 5 başarısız deneme
+BRUTE_FORCE_WINDOW = 60   # 60 saniye içinde
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "instance", "onhas.db")
@@ -341,6 +366,16 @@ def admin_login():
         return redirect(url_for("admin_panel"))
 
     if request.method == "POST":
+        ip = request.remote_addr
+        
+        # Brute-force kontrolü
+        now = time.time()
+        attempts = [t for t in login_attempts.get(ip, []) if now - t < BRUTE_FORCE_WINDOW]
+        login_attempts[ip] = attempts
+        if len(attempts) >= BRUTE_FORCE_MAX:
+            flash("Çok fazla başarısız deneme. Lütfen 1 dakika sonra tekrar deneyin.", "danger")
+            return render_template("admin/login.html", get_setting=get_setting)
+
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
 
@@ -355,9 +390,18 @@ def admin_login():
             user = User(row["id"], row["username"])
             login_user(user, remember=request.form.get("remember"))
             flash("Başarıyla giriş yaptınız.", "success")
+            
+            # Open redirect önlemi
             next_page = request.args.get("next")
+            if next_page:
+                ref_url = urlparse(request.host_url)
+                test_url = urlparse(urljoin(request.host_url, next_page))
+                if test_url.netloc != ref_url.netloc:
+                    next_page = None  # harici siteye redirect'e izin verme
+            
             return redirect(next_page or url_for("admin_panel"))
         else:
+            login_attempts[ip].append(time.time())
             flash("Kullanıcı adı veya şifre hatalı.", "danger")
 
     return render_template(
@@ -569,11 +613,38 @@ def uploaded_file(filename):
 
 
 # ---------------------------------------------------------------------------
+# Security Headers
+# ---------------------------------------------------------------------------
+@app.after_request
+def add_security_headers(response):
+    """Her response'a güvenlik başlıkları ekle."""
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+        "img-src 'self' data: https:; "
+        "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; "
+        "frame-src 'self' https://www.google.com; "
+        "connect-src 'self'"
+    )
+    if request.path.startswith("/yonetim"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
+# ---------------------------------------------------------------------------
 # Startup
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug_mode, host="0.0.0.0", port=5000)
 else:
     # Initialize DB on import (for gunicorn/wsgi)
     with app.app_context():
