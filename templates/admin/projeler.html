@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Proje Yönetimi — Onhas Yapı CMS</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+        body.admin-body { background: #f0f2f5; color: #333; padding-top: 0; font-family: 'Inter', sans-serif; }
+        .admin-wrapper { display: flex; min-height: 100vh; }
+        .admin-sidebar {
+            background: #1a1a2e; width: 260px; min-height: 100vh; position: fixed;
+            top: 0; left: 0; bottom: 0; z-index: 1040; overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .sidebar-brand {
+            padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: center; gap: 10px; color: #fff; font-size: 1rem;
+            font-weight: 700; text-decoration: none;
+        }
+        .sidebar-brand .sb-icon {
+            width: 36px; height: 36px; background: #c9a84c; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+            color: #1a1a2e; font-weight: 900;
+        }
+        .sidebar-nav { flex: 1; padding: 16px 12px; }
+        .sidebar-nav .nav-link {
+            color: #b0b8c8; padding: 11px 16px; border-radius: 8px; margin-bottom: 3px;
+            font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .sidebar-nav .nav-link i { font-size: 1.1rem; width: 22px; text-align: center; }
+        .sidebar-nav .nav-link:hover { background: rgba(201,168,76,0.1); color: #c9a84c; }
+        .sidebar-nav .nav-link.active { background: rgba(201,168,76,0.15); color: #c9a84c; font-weight: 600; }
+        .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-footer a { color: #dc3545; text-decoration: none; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; }
+        .sidebar-footer a:hover { background: rgba(220,53,69,0.1); }
+        .sidebar-footer .btn-site { color: #c9a84c; }
+        .sidebar-footer .btn-site:hover { background: rgba(201,168,76,0.1); }
+        .admin-main { margin-left: 260px; flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+        .admin-topbar {
+            background: #fff; border-bottom: 1px solid #e9ecef; padding: 14px 28px;
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1020;
+        }
+        .admin-topbar h5 { margin: 0; font-weight: 600; font-size: 1rem; }
+        .admin-content { padding: 28px; flex: 1; }
+        .table-card {
+            background: #fff; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05); border: 1px solid #e9ecef;
+        }
+        .table-card .table { margin: 0; }
+        .table-card thead { background: #f8f9fa; }
+        .table-card th {
+            font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;
+            color: #6c757d; padding: 14px 20px; border: none;
+        }
+        .table-card td { padding: 14px 20px; vertical-align: middle; border-color: #f0f0f0; font-size: 0.9rem; }
+        .table-card .project-thumb {
+            width: 60px; height: 60px; border-radius: 8px; object-fit: cover; background: #f0f0f0;
+        }
+        .badge-durum { font-size: 0.72rem; padding: 4px 12px; border-radius: 50px; font-weight: 600; }
+        .btn-action {
+            padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 500;
+            transition: all 0.2s; border: 1px solid transparent;
+        }
+        .btn-action-edit { background: rgba(201,168,76,0.1); color: #c9a84c; border-color: rgba(201,168,76,0.3); }
+        .btn-action-edit:hover { background: #c9a84c; color: #fff; }
+        .btn-action-del { background: rgba(220,53,69,0.08); color: #dc3545; border-color: rgba(220,53,69,0.3); }
+        .btn-action-del:hover { background: #dc3545; color: #fff; }
+        .btn-add {
+            background: #c9a84c; color: #1a1a2e; font-weight: 700; padding: 10px 22px;
+            border-radius: 8px; border: none; transition: all 0.3s; font-size: 0.9rem;
+        }
+        .btn-add:hover { background: #d4b65e; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+        /* Modal */
+        .modal-form .form-label { font-weight: 600; font-size: 0.85rem; color: #444; }
+        .modal-form .form-control, .modal-form .form-select {
+            border-radius: 8px; border: 1px solid #dee2e6; padding: 10px 14px; font-size: 0.9rem;
+        }
+        .modal-form .form-control:focus, .modal-form .form-select:focus {
+            border-color: #c9a84c; box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+        }
+        @media (max-width: 991.98px) {
+            .admin-sidebar { position: relative; width: 100%; min-height: auto; }
+            .admin-wrapper { flex-direction: column; }
+            .admin-main { margin-left: 0; }
+            .sidebar-nav { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; }
+            .sidebar-nav .nav-link { font-size: 0.8rem; padding: 8px 12px; }
+            .table-card { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body class="admin-body">
+    <div class="admin-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <a href="{{ url_for('admin_panel') }}" class="sidebar-brand">
+                <span class="sb-icon">&#9678;</span> ONHAS CMS
+            </a>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('admin_panel') }}" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a href="{{ url_for('admin_icerik') }}" class="nav-link"><i class="bi bi-file-text"></i> İçerik Yönetimi</a>
+                <a href="{{ url_for('admin_projeler') }}" class="nav-link active"><i class="bi bi-building"></i> Proje Yönetimi</a>
+                <a href="{{ url_for('admin_ayarlar') }}" class="nav-link"><i class="bi bi-gear"></i> Site Ayarları</a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="{{ url_for('index') }}" target="_blank" class="btn-site"><i class="bi bi-box-arrow-up-right"></i> Siteyi Gör</a>
+                <a href="{{ url_for('admin_logout') }}"><i class="bi bi-box-arrow-right"></i> Çıkış Yap</a>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="admin-main">
+            <div class="admin-topbar">
+                <h5><i class="bi bi-building me-2" style="color: #c9a84c;"></i>Proje Yönetimi</h5>
+                <span style="font-size: 0.85rem; color: #6c757d;">
+                    <i class="bi bi-person-circle me-1"></i>{{ current_user.username if current_user else 'Admin' }}
+                </span>
+            </div>
+            <div class="admin-content">
+                <!-- Flash -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <!-- Üst Bar: Başlık + Ekle Butonu -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <span style="font-size: 0.85rem; color: #6c757d;">Toplam {{ projeler|length if projeler else 0 }} proje</span>
+                    </div>
+                    <button class="btn-add" data-bs-toggle="modal" data-bs-target="#projeModal" onclick="resetModal()">
+                        <i class="bi bi-plus-lg me-1"></i> Yeni Proje Ekle
+                    </button>
+                </div>
+
+                <!-- Proje Tablosu -->
+                <div class="table-card">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Fotoğraf</th>
+                                <th>Proje Adı</th>
+                                <th>Durum</th>
+                                <th>Konum</th>
+                                <th style="width: 120px;">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if projeler %}
+                            {% for proje in projeler %}
+                            <tr>
+                                <td>
+                                    {% if proje.foto %}
+                                    <img src="{{ proje.foto }}" class="project-thumb" alt="{{ proje.title }}">
+                                    {% else %}
+                                    <div class="project-thumb" style="display: flex; align-items: center; justify-content: center; background: #f0f0f0;">
+                                        <i class="bi bi-image" style="color: #ccc; font-size: 1.4rem;"></i>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ proje.title }}</strong>
+                                    <div style="font-size: 0.78rem; color: #6c757d; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        {{ proje.description }}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if proje.durum == 'devam' %}
+                                    <span class="badge-durum" style="background: rgba(255,193,7,0.15); color: #b8970a;">Devam Ediyor</span>
+                                    {% elif proje.durum == 'bitti' %}
+                                    <span class="badge-durum" style="background: rgba(25,135,84,0.15); color: #198754;">Tamamlandı</span>
+                                    {% else %}
+                                    <span class="badge-durum" style="background: rgba(13,110,253,0.15); color: #0d6efd;">Gelecek</span>
+                                    {% endif %}
+                                </td>
+                                <td><i class="bi bi-geo-alt me-1" style="color: #adb5bd;"></i>{{ proje.konum or '—' }}</td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn-action btn-action-edit" onclick="editProje({{ proje.id }})" title="Düzenle">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <form method="POST" action="{{ url_for('admin_proje_sil', proje_id=proje.id) }}" 
+                                              onsubmit="return confirm('Bu projeyi silmek istediğinize emin misiniz?')" style="display: inline;">
+                                            <button type="submit" class="btn-action btn-action-del" title="Sil">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 48px 20px; color: #adb5bd;">
+                                    <i class="bi bi-building" style="font-size: 2.5rem; display: block; margin-bottom: 12px;"></i>
+                                    <p style="margin: 0;">Henüz hiç proje eklenmemiş.</p>
+                                    <p style="font-size: 0.85rem; margin: 4px 0 16px;">"Yeni Proje Ekle" butonuna tıklayarak ilk projenizi oluşturun.</p>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PROJE EKLE/DÜZENLE MODAL -->
+    <div class="modal fade" id="projeModal" tabindex="-1" aria-labelledby="projeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none;">
+                <div class="modal-header" style="border-bottom: 1px solid #f0f0f0; padding: 20px 24px;">
+                    <h5 class="modal-title fw-bold" id="projeModalLabel">
+                        <i class="bi bi-building me-2" style="color: #c9a84c;"></i>Proje Ekle / Düzenle
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <form method="POST" action="{{ url_for('admin_projeler') }}" enctype="multipart/form-data" class="modal-form">
+                    <div class="modal-body" style="padding: 24px;">
+                        <input type="hidden" name="proje_id" id="projeId" value="">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label">Proje Başlığı *</label>
+                                <input type="text" name="baslik" id="projeBaslik" class="form-control" required placeholder="Proje adını girin">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Durum *</label>
+                                <select name="durum" id="projeDurum" class="form-select" required>
+                                    <option value="devam">Devam Ediyor</option>
+                                    <option value="bitti">Tamamlandı</option>
+                                    <option value="gelecek">Gelecek</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Konum</label>
+                                <input type="text" name="konum" id="projeKonum" class="form-control" placeholder="Güzelbahçe / İzmir">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Fotoğraf Yükle</label>
+                                <input type="file" name="foto" id="projeFoto" class="form-control" accept="image/*">
+                                <div style="font-size: 0.75rem; color: #6c757d; margin-top: 4px;">Maks 5MB, JPG/PNG/WebP</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Açıklama *</label>
+                                <textarea name="aciklama" id="projeAciklama" class="form-control" rows="4" required placeholder="Proje hakkında detaylı açıklama"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="onecikar" id="projeOnecikar" value="1">
+                                    <label class="form-check-label" for="projeOnecikar" style="font-weight: 500; font-size: 0.9rem;">
+                                        Bu projeyi anasayfada öne çıkar
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border-top: 1px solid #f0f0f0; padding: 16px 24px;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn-add">
+                            <i class="bi bi-check-lg me-1"></i> Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function resetModal() {
+            document.getElementById('projeId').value = '';
+            document.getElementById('projeBaslik').value = '';
+            document.getElementById('projeDurum').value = 'devam';
+            document.getElementById('projeKonum').value = '';
+            document.getElementById('projeAciklama').value = '';
+            document.getElementById('projeOnecikar').checked = false;
+            document.getElementById('projeFoto').value = '';
+            document.getElementById('projeModalLabel').innerHTML = '<i class="bi bi-building me-2" style="color: #c9a84c;"></i>Yeni Proje Ekle';
+        }
+        function editProje(id) {
+            // Bu fonksiyon AJAX ile proje verisini çeker veya sunucudan gelen veriyle doldurulur
+            // Template tarafında data attributeları ile desteklenebilir
+            fetch('/yonetim/proje/' + id + '/json')
+                .then(r => r.json())
+                .then(p => {
+                    document.getElementById('projeId').value = p.id;
+                    document.getElementById('projeBaslik').value = p.baslik;
+                    document.getElementById('projeDurum').value = p.durum;
+                    document.getElementById('projeKonum').value = p.konum || '';
+                    document.getElementById('projeAciklama').value = p.aciklama;
+                    document.getElementById('projeOnecikar').checked = p.onecikar || false;
+                    document.getElementById('projeModalLabel').innerHTML = '<i class="bi bi-pencil me-2" style="color: #c9a84c;"></i>Proje Düzenle: ' + p.baslik;
+                    new bootstrap.Modal(document.getElementById('projeModal')).show();
+                })
+                .catch(err => {
+                    alert('Proje bilgileri alınamadı: ' + err);
+                });
+        }
+    </script>
+</body>
+</html>

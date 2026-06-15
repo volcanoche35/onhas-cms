@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block title %}Onhas Yapı — Güvenle İnşa Ediyoruz{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content">
+                <span class="hero-badge">{{ site.slogan or 'İzmir Güzelbahçe' }}</span>
+                <h1 class="hero-title">
+                    Geleceğe<br>
+                    <span class="gold">Sağlam Temeller</span><br>
+                    Atıyoruz
+                </h1>
+                <p class="hero-subtitle">
+                    {{ site.hero_aciklama or 'Modern inşaat teknikleri ve kaliteli malzemelerle hayallerinizdeki yapıları gerçeğe dönüştürüyoruz. 20+ yıllık tecrübemizle yanınızdayız.' }}
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('projeler') }}" class="btn btn-gold">
+                        <i class="bi bi-building me-2"></i>Projelerimiz
+                    </a>
+                    <a href="{{ url_for('iletisim') }}" class="btn btn-outline-gold">
+                        <i class="bi bi-telephone me-2"></i>İletişime Geç
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block text-end">
+                <div style="position: relative;">
+                    <!-- Dekoratif yapı elemanı -->
+                    <div style="width: 100%; height: 500px; background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.02) 100%); border-radius: 20px; border: 1px solid rgba(201,168,76,0.15); display: flex; align-items: center; justify-content: center;">
+                        <div style="text-align: center;">
+                            <i class="bi bi-building" style="font-size: 8rem; color: rgba(201,168,76,0.25);"></i>
+                            <div style="margin-top: 20px; color: rgba(201,168,76,0.3); font-size: 1.2rem; font-weight: 700; letter-spacing: 4px;">ONHAS YAPI</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HAKKIMIZDA ÖZET -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="about-image-wrapper">
+                    <div style="width: 100%; height: 420px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); display: flex; align-items: center; justify-content: center; border-radius: 16px;">
+                        <div style="text-align: center;">
+                            <i class="bi bi-buildings" style="font-size: 6rem; color: rgba(201,168,76,0.3);"></i>
+                            <p style="color: var(--gold); margin-top: 16px; font-weight: 600;">ONHAS YAPI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <span class="section-badge">Hakkımızda</span>
+                <h2 class="section-title text-start mb-3">
+                    {{ site.hakkimizda_baslik or '20+ Yıllık Tecrübe ile <span class="gold">Güvenle</span> İnşa Ediyoruz'|safe }}
+                </h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">
+                    {{ site.hakkimizda_ozet or 'Onhas Yapı olarak, İzmir Güzelbahçe merkezli faaliyetlerimizle konut, ticari yapı ve endüstriyel projelerde kalite ve güveni ön planda tutuyoruz.' }}
+                </p>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Modern inşaat teknikleri, deneyimli ekibimiz ve kaliteli malzeme anlayışımızla her projede müşteri memnuniyetini en üst seviyede tutuyoruz.
+                </p>
+                <a href="{{ url_for('hakkimizda') }}" class="btn btn-gold">
+                    <i class="bi bi-arrow-right me-2"></i>Detaylı Bilgi
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- İSTATİSTİKLER -->
+<section class="stats-section py-5">
+    <div class="container py-3">
+        <div class="row g-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ istatistikler.yil or '20+' }}</div>
+                    <div class="stat-label">Yıllık Tecrübe</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ istatistikler.proje or '150+' }}</div>
+                    <div class="stat-label">Tamamlanan Proje</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ istatistikler.musteri or '200+' }}</div>
+                    <div class="stat-label">Mutlu Müşteri</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ istatistikler.ekip or '50+' }}</div>
+                    <div class="stat-label">Uzman Ekip</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ÖNE ÇIKAN PROJELER -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="section-header">
+            <span class="section-badge">Projelerimiz</span>
+            <h2 class="section-title">Öne Çıkan <span class="gold">Projeler</span></h2>
+            <p class="section-desc">Tamamladığımız ve devam eden projelerimizden seçmeler. Her biri kalite ve güvenin eseri.</p>
+        </div>
+        <div class="row g-4">
+            {% for proje in one_cikan_projeler[:3] %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    {% if proje.foto %}
+                    <img src="{{ proje.foto }}" class="card-img-top" alt="{{ proje.title }}">
+                    {% else %}
+                    <div style="height: 240px; background: linear-gradient(135deg, #16213e, #1a1a2e); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-building" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="card-badge {% if proje.durum == 'devam' %}badge-ongoing{% elif proje.durum == 'bitti' %}badge-completed{% else %}badge-upcoming{% endif %}">
+                            {% if proje.durum == 'devam' %}Devam Ediyor{% elif proje.durum == 'bitti' %}Tamamlandı{% else %}Gelecek{% endif %}
+                        </span>
+                        <h5 class="card-title">{{ proje.title or 'Proje Başlığı' }}</h5>
+                        <p class="card-text">{{ proje.description[:120] or 'Proje açıklaması buraya gelecek.' }}{% if proje.description and proje.description|length > 120 %}...{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Varsayılan placeholder projeler -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    <div style="height: 240px; background: linear-gradient(135deg, #16213e, #1a1a2e); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-house-heart" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-badge badge-completed">Tamamlandı</span>
+                        <h5 class="card-title">Modern Konut Projesi</h5>
+                        <p class="card-text">Güzelbahçe'de modern mimari anlayışıyla tasarlanmış, 12 daireli konut projesi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    <div style="height: 240px; background: linear-gradient(135deg, #0f3460, #16213e); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-building" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-badge badge-ongoing">Devam Ediyor</span>
+                        <h5 class="card-title">Ticari Ofis Binası</h5>
+                        <p class="card-text">İzmir merkezde, A sınıfı ofis alanları sunan 5 katlı modern ticari bina.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    <div style="height: 240px; background: linear-gradient(135deg, #1a1a2e, #0f3460); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-house" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-badge badge-upcoming">Gelecek</span>
+                        <h5 class="card-title">Villa Projesi</h5>
+                        <p class="card-text">Deniz manzaralı, özel havuzlu lüks villa projesi. Yakında başlıyor.</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{{ url_for('projeler') }}" class="btn btn-outline-gold">
+                Tüm Projeleri Gör <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- HİZMETLER BÖLÜMÜ -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="section-header">
+            <span class="section-badge">Hizmetlerimiz</span>
+            <h2 class="section-title">Neler <span class="gold">Yapıyoruz?</span></h2>
+            <p class="section-desc">İnşaat sektöründe sunduğumuz kapsamlı hizmet yelpazesiyle tüm ihtiyaçlarınıza çözüm üretiyoruz.</p>
+        </div>
+        <div class="row g-4">
+            {% for hizmet in hizmetler[:6] %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="bi bi-{{ hizmet.icon or 'building' }}"></i>
+                    </div>
+                    <h4>{{ hizmet.title or 'Hizmet Başlığı' }}</h4>
+                    <p>{{ hizmet.description or 'Hizmet açıklaması buraya gelecek.' }}</p>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="bi bi-building"></i></div>
+                    <h4>Konut İnşaatı</h4>
+                    <p>Modern ve güvenli konut projeleriyle hayallerinizdeki evi inşa ediyoruz.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="bi bi-buildings"></i></div>
+                    <h4>Ticari Yapılar</h4>
+                    <p>Ofis, mağaza ve iş merkezi projelerinde profesyonel çözümler sunuyoruz.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="bi bi-tools"></i></div>
+                    <h4>Tadilat & Yenileme</h4>
+                    <p>Mevcut yapılarınızı modern standartlara uygun şekilde yeniliyoruz.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="bi bi-pencil-square"></i></div>
+                    <h4>Mimari Proje</h4>
+                    <p>Estetik ve fonksiyonelliği bir araya getiren mimari tasarım hizmeti.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="bi bi-shield-check"></i></div>
+                    <h4>Yapı Denetim</h4>
+                    <p>Projelerinizin her aşamasında kalite ve güvenlik denetimi sağlıyoruz.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon"><i class="bi bi-droplet"></i></div>
+                    <h4>Altyapı Çalışmaları</h4>
+                    <p>Su, elektrik ve kanalizasyon altyapısında güvenilir çözümler üretiyoruz.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA BÖLÜMÜ -->
+<section class="py-5">
+    <div class="container py-4">
+        <div style="background: linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.03)); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 50px 30px; text-align: center;">
+            <h2 style="font-weight: 800; font-size: clamp(1.5rem, 3vw, 2rem); margin-bottom: 12px;">
+                Projenizi Hayata <span class="gold">Geçirelim</span>
+            </h2>
+            <p style="color: var(--text-secondary); max-width: 550px; margin: 0 auto 28px;">
+                Hayalinizdeki proje için bize ulaşın. Ücretsiz keşif ve danışmanlık hizmetimizle yanınızdayız.
+            </p>
+            <a href="https://wa.me/{{ (site.whatsapp or '905336400937')|replace('+','')|replace(' ','') }}" target="_blank" rel="noopener" class="btn btn-whatsapp">
+                <i class="bi bi-whatsapp"></i> WhatsApp'tan Ulaşın
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

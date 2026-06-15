@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block title %}İletişim — Onhas Yapı{% endblock %}
+
+{% block content %}
+<!-- SAYFA BANNER -->
+<section class="page-banner">
+    <div class="container">
+        <h1>İletişim</h1>
+        <p>Bizimle iletişime geçin. Projeleriniz için ücretsiz keşif ve danışmanlık hizmeti sunuyoruz.</p>
+    </div>
+</section>
+
+<!-- İLETİŞİM BİLGİLERİ -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row g-4">
+            <!-- Telefon -->
+            <div class="col-md-6 col-lg-3">
+                <div class="contact-info-card text-center">
+                    <div class="contact-icon mx-auto">
+                        <i class="bi bi-telephone-fill"></i>
+                    </div>
+                    <h5>Telefon</h5>
+                    <a href="tel:{{ site.telefon or '+905336400937' }}">{{ site.telefon or '+90 533 640 09 37' }}</a>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Hafta içi 09:00 - 18:00</p>
+                </div>
+            </div>
+            <!-- WhatsApp -->
+            <div class="col-md-6 col-lg-3">
+                <div class="contact-info-card text-center">
+                    <div class="contact-icon mx-auto" style="background: rgba(37,211,102,0.1); color: #25D366;">
+                        <i class="bi bi-whatsapp"></i>
+                    </div>
+                    <h5>WhatsApp</h5>
+                    <a href="https://wa.me/{{ (site.whatsapp or '905336400937')|replace('+','')|replace(' ','') }}" target="_blank" rel="noopener">
+                        {{ site.whatsapp or '+90 533 640 09 37' }}
+                    </a>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Hızlı yanıt için yazın</p>
+                </div>
+            </div>
+            <!-- Instagram -->
+            <div class="col-md-6 col-lg-3">
+                <div class="contact-info-card text-center">
+                    <div class="contact-icon mx-auto" style="background: rgba(220,39,67,0.1); color: #dc2743;">
+                        <i class="bi bi-instagram"></i>
+                    </div>
+                    <h5>Instagram</h5>
+                    <a href="{{ site.instagram_url or '#' }}" target="_blank" rel="noopener">
+                        @{{ site.instagram_kullanici or 'onhasyapi' }}
+                    </a>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Projelerimizi takip edin</p>
+                </div>
+            </div>
+            <!-- Adres -->
+            <div class="col-md-6 col-lg-3">
+                <div class="contact-info-card text-center">
+                    <div class="contact-icon mx-auto">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <h5>Adres</h5>
+                    <p>{{ site.adres or 'Güzelbahçe / İzmir' }}</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Keşif için geliyoruz</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WHATSAPP & INSTAGRAM CTA -->
+<section class="py-4">
+    <div class="container py-3">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div style="background: linear-gradient(135deg, #25D366, #128C7E); border-radius: var(--radius-md); padding: 40px 30px; text-align: center; height: 100%;">
+                    <i class="bi bi-whatsapp" style="font-size: 3rem; color: #fff; margin-bottom: 16px; display: block;"></i>
+                    <h4 style="color: #fff; font-weight: 700; margin-bottom: 8px;">WhatsApp'tan Ulaşın</h4>
+                    <p style="color: rgba(255,255,255,0.85); margin-bottom: 24px;">Hızlı iletişim için WhatsApp hattımıza yazabilirsiniz.</p>
+                    <a href="https://wa.me/{{ (site.whatsapp or '905336400937')|replace('+','')|replace(' ','') }}" 
+                       target="_blank" rel="noopener" 
+                       style="display: inline-block; background: #fff; color: #25D366; padding: 12px 28px; border-radius: 50px; font-weight: 700; text-decoration: none; transition: all 0.3s;">
+                        <i class="bi bi-whatsapp me-2"></i>Mesaj Gönder
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div style="background: linear-gradient(135deg, #833AB4, #E1306C, #F77737); border-radius: var(--radius-md); padding: 40px 30px; text-align: center; height: 100%;">
+                    <i class="bi bi-instagram" style="font-size: 3rem; color: #fff; margin-bottom: 16px; display: block;"></i>
+                    <h4 style="color: #fff; font-weight: 700; margin-bottom: 8px;">Instagram'da Takip Edin</h4>
+                    <p style="color: rgba(255,255,255,0.85); margin-bottom: 24px;">Projelerimizi ve güncel çalışmalarımızı Instagram'dan takip edin.</p>
+                    <a href="{{ site.instagram_url or '#' }}" target="_blank" rel="noopener"
+                       style="display: inline-block; background: #fff; color: #E1306C; padding: 12px 28px; border-radius: 50px; font-weight: 700; text-decoration: none; transition: all 0.3s;">
+                        <i class="bi bi-instagram me-2"></i>Takip Et
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HARİTA (Opsiyonel) -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="section-header">
+            <span class="section-badge">Konum</span>
+            <h2 class="section-title">Bizi <span class="gold">Ziyaret Edin</span></h2>
+        </div>
+        <div class="contact-map">
+            {% if site.harita_embed %}
+            {{ site.harita_embed|safe }}
+            {% else %}
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25063.123456789!2d26.8300!3d38.3600!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14bbd1e123456789%3A0xabcdef1234567890!2zR8O8emVsYmFow6dlLCDEsHptaXI!5e0!3m2!1str!2str!4v1700000000000"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- ÇALIŞMA SAATLERİ -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+                <h3 style="font-weight: 700; margin-bottom: 16px;">
+                    <span class="gold">Ücretsiz</span> Keşif Hizmeti
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 1.05rem; line-height: 1.7; margin-bottom: 24px;">
+                    Projeniz için bize ulaşın, ekibimiz ücretsiz keşif yaparak size özel çözüm önerileri sunsun. 
+                    Hiçbir yükümlülük altına girmeden profesyonel danışmanlık alabilirsiniz.
+                </p>
+                <a href="https://wa.me/{{ (site.whatsapp or '905336400937')|replace('+','')|replace(' ','') }}" target="_blank" rel="noopener" class="btn btn-gold">
+                    <i class="bi bi-whatsapp me-2"></i>Ücretsiz Keşif Talep Et
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <div style="background: var(--card-bg); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius-md); padding: 30px;">
+                    <h5 style="font-weight: 700; color: var(--gold); margin-bottom: 20px;">
+                        <i class="bi bi-clock me-2"></i>Çalışma Saatleri
+                    </h5>
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="color: var(--text-secondary);">Pazartesi - Cuma</span>
+                        <span style="font-weight: 600;">09:00 - 18:00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="color: var(--text-secondary);">Cumartesi</span>
+                        <span style="font-weight: 600;">09:00 - 13:00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px 0;">
+                        <span style="color: var(--text-secondary);">Pazar</span>
+                        <span style="font-weight: 600; color: var(--gold);">Kapalı</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

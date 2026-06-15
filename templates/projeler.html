@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Projelerimiz — Onhas Yapı{% endblock %}
+
+{% block content %}
+<!-- SAYFA BANNER -->
+<section class="page-banner">
+    <div class="container">
+        <h1>Projelerimiz</h1>
+        <p>Devam eden, tamamlanan ve gelecek projelerimizi keşfedin.</p>
+    </div>
+</section>
+
+<!-- PROJE SEKMELERİ -->
+<section class="py-5 project-tabs">
+    <div class="container py-4">
+        <!-- Sekme Butonları -->
+        <ul class="nav nav-pills justify-content-center" id="projectTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="devam-tab" data-bs-toggle="pill" data-bs-target="#devam" type="button" role="tab" aria-selected="true">
+                    <i class="bi bi-cone-striped me-2"></i>Devam Eden
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="biten-tab" data-bs-toggle="pill" data-bs-target="#biten" type="button" role="tab" aria-selected="false">
+                    <i class="bi bi-check-circle me-2"></i>Tamamlanan
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="gelecek-tab" data-bs-toggle="pill" data-bs-target="#gelecek" type="button" role="tab" aria-selected="false">
+                    <i class="bi bi-calendar3 me-2"></i>Gelecek
+                </button>
+            </li>
+        </ul>
+
+        <!-- Sekme İçerikleri -->
+        <div class="tab-content" id="projectTabsContent">
+            <!-- DEVAM EDEN PROJELER -->
+            <div class="tab-pane fade show active" id="devam" role="tabpanel" aria-labelledby="devam-tab">
+                <div class="row g-4">
+                    {% set devam_projeler = projeler | selectattr('durum', 'equalto', 'devam') | list %}
+                    {% for proje in devam_projeler %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card-custom">
+                            {% if proje.foto %}
+                            <img src="{{ proje.foto }}" class="card-img-top" alt="{{ proje.title }}">
+                            {% else %}
+                            <div style="height: 240px; background: linear-gradient(135deg, #16213e, #1a1a2e); display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-cone-striped" style="font-size: 3rem; color: rgba(255,193,7,0.3);"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="card-badge badge-ongoing">Devam Ediyor</span>
+                                <h5 class="card-title">{{ proje.title }}</h5>
+                                <p class="card-text">{{ proje.description }}</p>
+                                {% if proje.konum %}
+                                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ proje.konum }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-cone-striped" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                        <p style="color: var(--text-secondary); margin-top: 16px;">Şu anda devam eden proje bulunmamaktadır.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TAMAMLANAN PROJELER -->
+            <div class="tab-pane fade" id="biten" role="tabpanel" aria-labelledby="biten-tab">
+                <div class="row g-4">
+                    {% set biten_projeler = projeler | selectattr('durum', 'equalto', 'bitti') | list %}
+                    {% for proje in biten_projeler %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card-custom">
+                            {% if proje.foto %}
+                            <img src="{{ proje.foto }}" class="card-img-top" alt="{{ proje.title }}">
+                            {% else %}
+                            <div style="height: 240px; background: linear-gradient(135deg, #0f3460, #16213e); display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-check-circle" style="font-size: 3rem; color: rgba(25,135,84,0.3);"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="card-badge badge-completed">Tamamlandı</span>
+                                <h5 class="card-title">{{ proje.title }}</h5>
+                                <p class="card-text">{{ proje.description }}</p>
+                                {% if proje.konum %}
+                                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ proje.konum }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-check-circle" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                        <p style="color: var(--text-secondary); margin-top: 16px;">Henüz tamamlanan proje eklenmemiştir.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- GELECEK PROJELER -->
+            <div class="tab-pane fade" id="gelecek" role="tabpanel" aria-labelledby="gelecek-tab">
+                <div class="row g-4">
+                    {% set gelecek_projeler = projeler | selectattr('durum', 'equalto', 'gelecek') | list %}
+                    {% for proje in gelecek_projeler %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card-custom">
+                            {% if proje.foto %}
+                            <img src="{{ proje.foto }}" class="card-img-top" alt="{{ proje.title }}">
+                            {% else %}
+                            <div style="height: 240px; background: linear-gradient(135deg, #1a1a2e, #0f3460); display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-calendar3" style="font-size: 3rem; color: rgba(13,110,253,0.3);"></i>
+                            </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="card-badge badge-upcoming">Gelecek</span>
+                                <h5 class="card-title">{{ proje.title }}</h5>
+                                <p class="card-text">{{ proje.description }}</p>
+                                {% if proje.konum %}
+                                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 12px;">
+                                    <i class="bi bi-geo-alt me-1"></i>{{ proje.konum }}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-calendar3" style="font-size: 3rem; color: rgba(201,168,76,0.2);"></i>
+                        <p style="color: var(--text-secondary); margin-top: 16px;">Gelecek proje planlaması devam etmektedir.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Veri yoksa placeholder göster -->
+        {% if not projeler %}
+        <div class="row g-4 mt-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    <div style="height: 240px; background: linear-gradient(135deg, #16213e, #1a1a2e); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-cone-striped" style="font-size: 3rem; color: rgba(255,193,7,0.3);"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-badge badge-ongoing">Devam Ediyor</span>
+                        <h5 class="card-title">Konut Projesi</h5>
+                        <p class="card-text">Güzelbahçe bölgesinde devam eden modern konut inşaatı projesi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    <div style="height: 240px; background: linear-gradient(135deg, #0f3460, #16213e); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-check-circle" style="font-size: 3rem; color: rgba(25,135,84,0.3);"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-badge badge-completed">Tamamlandı</span>
+                        <h5 class="card-title">Ticari Bina</h5>
+                        <p class="card-text">2024'te tamamlanan 4 katlı modern ofis ve ticari alan projesi.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card-custom">
+                    <div style="height: 240px; background: linear-gradient(135deg, #1a1a2e, #0f3460); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-calendar3" style="font-size: 3rem; color: rgba(13,110,253,0.3);"></i>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-badge badge-upcoming">Gelecek</span>
+                        <h5 class="card-title">Villa Kompleksi</h5>
+                        <p class="card-text">2026'da başlaması planlanan 8 villalık özel konut projesi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
